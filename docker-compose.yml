@@ -1,0 +1,43 @@
+version: '3.6'
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: dockerfiles/app.dockerfile
+    working_dir: /var/www/html
+    env_file:
+      - .env.example
+    volumes:
+      - ./:/var/www/html:cached
+
+  web:
+    depends_on:
+      - app
+      - nginx-proxy
+    build:
+      context: ./
+      dockerfile: dockerfiles/web.dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./public:/var/www/html/public:delegated
+    environment:
+      VIRTUAL_HOST: oneupsales.local,*.oneupsales.local
+      VIRTUAL_PORT: 3000
+    expose:
+      - 3000
+
+  composer:
+    image: composer:1.5.2
+    command: install --ignore-platform-reqs
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:delegated
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./resources/nginx/dev/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf:cached
