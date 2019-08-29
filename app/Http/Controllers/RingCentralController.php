@@ -40,7 +40,7 @@ class RingCentralController extends Controller
 
     public function index()
     {
-        return $this->getAuthenticationUrl(self::MODE_GUZZLE);
+        dd(config('app.url'), 'https://www.oneupsales-dev.io', url(route('callback'), [], true), $this->getRedirectUri());
     }
 
     public function callback(Request $request)
