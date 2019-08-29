@@ -151,7 +151,9 @@ class RingCentralController extends Controller
 
     private function getRedirectUri()
     {
-        return str_replace(config('app.url'), 'https://www.oneupsales-dev.io', url(route('callback'), [], true));
+        $url = str_replace('oneupsales.local', 'oneupsales-dev.io', url(route('callback'), [], true));
+        $url = str_replace('http://', 'https://', $url);
+        return $url;
     }
 
     private function getAuthenticationUrl(string $mode)
